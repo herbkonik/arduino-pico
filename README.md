@@ -108,6 +108,7 @@ Read the [Contributing Guide](https://github.com/earlephilhower/arduino-pico/blo
 * Solder Party RP2350 Stamp
 * Solder Party RP2350 Stamp XL
 * Soldered Electronics NULA Ethernet W55RP20
+* Soldered Electronics NULA Node RP2040
 * Soldered Electronics NULA RP2350
 * SparkFun IoT RedBoard RP2350
 * SparkFun MicroMod RP2040
@@ -315,6 +316,8 @@ The installed tools include a version of OpenOCD (in the pqt-openocd directory) 
 * [TLSF memory manager for PSRAM from Espressif fork](https://github.com/espressif/tlsf) of [original](https://github.com/mattconte/tlsf) by Matthew Conte is copyright Matthew Conte and licensed under the MIT license.
 * [ESPHost library](https://github.com/Networking-for-Arduino/ESPHost) is LGPL licensed by its maintainers.
 * [iLabs_ESP-NOW library](https://github.com/PontusO/iLabs_ESP-NOW) is licensed under the MIT license by iLabs Electronics.
+* [iLabs_Hearth library](https://github.com/PontusO/iLabs_Hearth) is licensed under the MIT license by iLabs Electronics.
+* [PicoCamera](https://github.com/umeiko/PicoCamera) camera library is licensed under the MIT license by umeko.
 
 -Earle F. Philhower, III  
  earlephilhower@yahoo.com

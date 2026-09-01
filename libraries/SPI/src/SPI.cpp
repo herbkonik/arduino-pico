@@ -77,7 +77,7 @@ void SPIClassRP2040::adjustBuffer(const void *s, void *d, size_t cnt, bool by16)
     }
 }
 
-byte SPIClassRP2040::transfer(uint8_t data) {
+uint8_t SPIClassRP2040::transfer(uint8_t data) {
     uint8_t ret;
     if (!_initted) {
         return 0;
@@ -503,6 +503,10 @@ void SPIClassRP2040::setDataMode(uint8_t uc_mode) {
 void SPIClassRP2040::setClockDivider(uint8_t uc_div) {
     (void) uc_div; // no-op
 }
+
+#if (!defined(__SPI0_DEVICE) && defined(__SPI1_DEVICE)) || (defined(__SPI0_DEVICE) && !defined(__SPI1_DEVICE))
+#error "Need to define both __SPI0_DEVICE and __SPI1_DEVICE"
+#endif
 
 #ifndef __SPI0_DEVICE
 #define __SPI0_DEVICE spi0
