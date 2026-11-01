@@ -171,6 +171,7 @@ bool I2S::setSysClk(int samplerate) { // optimise sys_clk for desired samplerate
     switch (samplerate) {
     case 8000:
     case 16000:
+    case 24000:
     case 32000:
     case 48000:
     case 96000:
@@ -201,6 +202,7 @@ bool I2S::setSysClk(int samplerate) { // optimise sys_clk for desired samplerate
 #else
     switch (samplerate) {
     case 8000:
+    case 24000:
         rate = 192000;
         break;
     case 16000:
@@ -464,7 +466,7 @@ bool I2S::begin() {
     // Generate the input ARB for DMA to RAM
     if (_isInput) {
         _arbInput = new AudioBufferManager(_buffers, _bufferWords, _silenceSample, INPUT);
-        if (!_arbInput->begin(pio_get_dreq(_pio, _sm, false), (volatile void*)&_pio->rxf[_sm])) {
+        if (!_arbInput->begin(pio_get_dreq(_pio, _sm, false), (volatile void *)&_pio->rxf[_sm])) {
             _running = false;
             delete _arbInput;
             _arbInput = nullptr;

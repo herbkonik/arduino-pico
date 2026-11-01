@@ -179,6 +179,9 @@ public:
     // Arduino Ethernet compatibility
     EthernetLinkStatus linkStatus();
 
+    // Hides RawDev::isLinked() so app-side PHY reads are serialized with packet I/O
+    bool isLinked();
+
 protected:
     err_t netif_init();
     void  check_route();
@@ -297,7 +300,7 @@ bool LwipIntfDev<RawDev>::config(const IPAddress& localIP, const IPAddress& gate
                                  const IPAddress& netmask, const IPAddress& dns1,
                                  const IPAddress& dns2) {
     if (_started) {
-        DEBUGV("LwipIntfDev: use config() then begin()\n");
+        DEBUGV("LwipIntfDev: use config() then begin()");
         return false;
     }
 
@@ -430,7 +433,7 @@ bool LwipIntfDev<RawDev>::begin(const uint8_t* macAddress, const uint16_t mtu) {
 #if LWIP_IPV6_DHCP6_STATELESS
     err_t __res = dhcp6_enable_stateless(&_netif);
     (void) __res; // Not used except for debug
-    DEBUGV("LwipIntfDev: Enabled DHCP6 stateless: %d\n", __res);
+    DEBUGV("LwipIntfDev: Enabled DHCP6 stateless: %d", __res);
 #endif
 
     _started = true;
@@ -510,7 +513,19 @@ wl_status_t LwipIntfDev<RawDev>::status() {
 
 template<class RawDev>
 EthernetLinkStatus LwipIntfDev<RawDev>::linkStatus() {
-    return RawDev::isLinkDetectable() ? _started && RawDev::isLinked() ? LinkON : LinkOFF : Unknown;
+    return RawDev::isLinkDetectable() ? _started && isLinked() ? LinkON : LinkOFF : Unknown;
+}
+
+template<class RawDev>
+bool LwipIntfDev<RawDev>::isLinked() {
+#ifdef __FREERTOS
+    xSemaphoreTake(_hwMutex, portMAX_DELAY);
+#endif
+    bool ret = RawDev::isLinked();
+#ifdef __FREERTOS
+    xSemaphoreGive(_hwMutex);
+#endif
+    return ret;
 }
 
 template<class RawDev>

@@ -32,8 +32,8 @@ def BuildDebugPort(name):
         print("%s.menu.dbgport.%s.build.debug_port=-DDEBUG_RP2040_PORT=%s" % (name, p, p))
 
 def BuildDebugLevel(name):
-    for l in [ ("None", ""), ("Core", "-DDEBUG_RP2040_CORE"), ("SPI", "-DDEBUG_RP2040_SPI"), ("Wire", "-DDEBUG_RP2040_WIRE"), ("Bluetooth", "-DDEBUG_RP2040_BLUETOOTH"), ("BLE", "-DDEBUG_RP2040_BLE"),
-               ("LWIP", "-DLWIP_DEBUG=1"), ("All", "-DDEBUG_RP2040_WIRE -DDEBUG_RP2040_SPI -DDEBUG_RP2040_CORE -DDEBUG_RP2040_BLUETOOTH -DDEBUG_RP2040_BLE -DLWIP_DEBUG=1"), ("NDEBUG", "-DNDEBUG") ]:
+    for l in [ ("None", ""), ("Core", "-DDEBUG_RP2040_CORE"), ("SPI", "-DDEBUG_RP2040_SPI"), ("Wire", "-DDEBUG_RP2040_WIRE"), ("BTStack", "-DDEBUG_RP2040_BTSTACK"), ("Bluetooth", "-DDEBUG_RP2040_BLUETOOTH"),
+               ("LWIP", "-DLWIP_DEBUG=1"), ("All", "-DDEBUG_RP2040_WIRE -DDEBUG_RP2040_SPI -DDEBUG_RP2040_CORE -DDEBUG_RP2040_BTSTACK -DDEBUG_RP2040_BLUETOOTH -DLWIP_DEBUG=1"), ("NDEBUG", "-DNDEBUG") ]:
         print("%s.menu.dbglvl.%s=%s" % (name, l[0], l[0]))
         print("%s.menu.dbglvl.%s.build.debug_level=%s" % (name, l[0], l[1]))
 
@@ -202,6 +202,10 @@ def BuildUploadMethodMenu(name, ram):
         print("%s.menu.uploadmethod.%s.build.debugscript=%s" % (name, a, d))
         if a == "picotool":
             print("%s.menu.uploadmethod.%s.build.picodebugflags=-DENABLE_PICOTOOL_USB" % (name, a))
+        if a != "default":
+            # No serial port is involved in these upload methods (picotool/openocd find
+            # the device themselves), so don't make arduino-cli wait for one to reappear.
+            print("%s.menu.uploadmethod.%s.upload.wait_for_upload_port=false" % (name, a))
         print("%s.menu.uploadmethod.%s.upload.maximum_data_size=%d" % (name, a, c * 1024))
         print("%s.menu.uploadmethod.%s.upload.tool=%s" % (name, a, e))
         print("%s.menu.uploadmethod.%s.upload.tool.default=%s" % (name, a, e))
@@ -403,7 +407,7 @@ def MakeBoard(name, chip, vendor_name, product_name, vid, pid, pwr, boarddefine,
             BuildPSRAMCS(name)
             BuildPSRAM(name)
             BuildPSRAMFreq(name)
-        elif (name == "datanoisetv_picoadk_v2") or (name == "olimex_pico2bb48") or (name == "solderparty_rp2350_stamp_xl"):
+        elif (name == "datanoisetv_picoadk_v2") or (name == "olimex_pico2bb48") or (name == "solderparty_rp2350_stamp_xl") or (name == "waveshare_rp2350_core"):
             # Optional, user needs to solder themselves
             BuildPSRAM(name)
             BuildPSRAMFreq(name)
@@ -601,6 +605,7 @@ MakeBoard("cytron_maker_nano_rp2040", "rp2040", "Cytron", "Maker Nano RP2040", "
 MakeBoard("cytron_maker_pi_rp2040", "rp2040", "Cytron", "Maker Pi RP2040", "0x2e8a", "0x1000", 250, "CYTRON_MAKER_PI_RP2040", 2, 0, "boot2_w25q080_2_padded_checksum")
 MakeBoard("cytron_maker_uno_rp2040", "rp2040", "Cytron", "Maker Uno RP2040", "0x2e8a", "0x1071", 250, "CYTRON_MAKER_UNO_RP2040", 2, 0, "boot2_w25q080_2_padded_checksum")
 MakeBoard("cytron_motion_2350_pro", "rp2350", "Cytron", "Motion 2350 Pro", "0x2e8a", "0x1096", 250, "CYTRON_MOTION_2350_PRO", 2, 0, "none")
+MakeBoard("cytron_maker_sumo_rp2350", "rp2350", "Cytron", "Maker Sumo RP2350", "0x2e8a", "0x112f", 250, "CYTRON_MAKER_SUMO_RP2350", 2, 0, "none")
 
 # DatanoiseTV
 MakeBoard("datanoisetv_picoadk", "rp2040", "DatanoiseTV", "PicoADK", "0x2e8a", "0x000a", 250, "DATANOISETV_PICOADK", 2, 0, "boot2_w25q080_2_padded_checksum")
@@ -649,6 +654,7 @@ MakeBoard("ilabs_rpico32", "rp2040", "iLabs", "RPICO32", "0x2e8a", "0x1010", 250
 MakeBoard("challenger_2350_wifi6_ble5", "rp2350", "iLabs", "Challenger 2350 WiFi/BLE", "0x2e8a", "0x109a", 500, "CHALLENGER_2350_WIFI_BLE_RP2350", 8, 8, "none")
 MakeBoard("challenger_2350_bconnect", "rp2350", "iLabs", "Challenger 2350 BConnect", "0x2e8a", "0x109b", 500, "CHALLENGER_2350_BCONNECT_RP2350", 8, 8, "none")
 MakeBoard("challenger_2350_nbiot", "rp2350", "iLabs", "Challenger 2350 NB-IoT", "0x2e8a", "0x110d", 500, "CHALLENGER_2350_NBIOT_RP2350", 8, 0, "none")
+MakeBoard("challenger_zp_2350_lora", "rp2350", "iLabs", "Challenger ZP 2350 LoRa", "0x2e8a", "0x1123", 500, "CHALLENGER_ZP_2350_LORA_RP2350", 8, 0, "none")
 MakeBoard("ilabs_cpico_2350", "rp2350", "iLabs", "CPico 2350", "0x2e8a", "0x113f", 500, "CPICO_2350_RP2350", 8, 8, "none")
 
 # Makerbase
@@ -765,11 +771,13 @@ MakeBoard("waveshare_rp2040_pizero", "rp2040", "Waveshare", "RP2040 PiZero", "0x
 MakeBoard("waveshare_rp2040_plus", "rp2040", "Waveshare", "RP2040 Plus", "0x2e8a", "0x1020", 500, "WAVESHARE_RP2040_PLUS", 4, 0, "boot2_w25q080_2_padded_checksum")
 MakeBoard("waveshare_rp2040_lcd_0_96", "rp2040", "Waveshare", "RP2040 LCD 0.96", "0x2e8a", "0x1021", 500, "WAVESHARE_RP2040_LCD_0_96", 2, 0, "boot2_w25q16jvxq_4_padded_checksum")
 MakeBoard("waveshare_rp2040_lcd_1_28", "rp2040", "Waveshare", "RP2040 LCD 1.28", "0x2e8a", "0x1039", 500, "WAVESHARE_RP2040_LCD_1_28", 2, 0, "boot2_w25q16jvxq_4_padded_checksum")
+MakeBoard("waveshare_rp2350_core", "rp2350", "Waveshare", "RP2350 Core", "0x2e8a", "0x10B2", 500, "WAVESHARE_RP2350_CORE", 16, 0, "none")
 MakeBoard("waveshare_rp2350_zero", "rp2350", "Waveshare", "RP2350 Zero", "0x2e8a", "0x10B0", 500, "WAVESHARE_RP2350_ZERO", 4, 0, "none")
 MakeBoard("waveshare_rp2350_pizero", "rp2350", "Waveshare", "RP2350 PiZero", "0x2e8a", "0x000F", 500, "WAVESHARE_RP2350_PIZERO", 16, 0, "none")
 MakeBoard("waveshare_rp2350_plus", "rp2350", "Waveshare", "RP2350 Plus", "0x2e8a", "0x10B1", 500, "WAVESHARE_RP2350_PLUS", 4, 0, "none")
 MakeBoard("waveshare_rp2350b_plus_w", "rp2350", "Waveshare", "RP2350B Plus W", "0x2e8a", "0xf00a", 500, "WAVESHARE_RP2350B_PLUS_W", 16, 0, "none", ["PICO_CYW43_SUPPORTED=1", "CYW43_PIN_WL_DYNAMIC=1"])
 MakeBoard("waveshare_rp2350_lcd_0_96", "rp2350", "Waveshare", "RP2350 LCD 0.96", "0x2e8a", "0x10B7", 500, "WAVESHARE_RP2350_LCD_0_96", 4, 0, "none")
+MakeBoard("waveshare_rp2350_poe_eth", "rp2350", "Waveshare", "RP2350-POE-ETH", "0x2e8a", "0x10B8", 500, "WAVESHARE_RP2350_POE_ETH", 16, 0, "none")
 
 # WeAct
 MakeBoard("weact_rp2350b", "rp2350", "WeAct", "Studio RP2350B Core Board", "0x2e8a", "0x000f", 250, "WEACT_RP2350B", 16, 0, "none")
@@ -777,12 +785,12 @@ MakeBoard("weact_rp2350b", "rp2350", "WeAct", "Studio RP2350B Core Board", "0x2e
 # WIZnet
 MakeBoard("wiznet_5100s_evb_pico", "rp2040", "WIZnet", "W5100S-EVB-Pico", "0x2e8a", "0x1027", 250, "WIZNET_5100S_EVB_PICO", 2, 0, "boot2_w25q080_2_padded_checksum")
 MakeBoard("wiznet_5100s_evb_pico2", "rp2350", "WIZnet", "W5100S-EVB-Pico2", "0x2e8a", "0x1027", 250, "WIZNET_5100S_EVB_PICO2", 2, 0, "none")
-MakeBoard("wiznet_wizfi360_evb_pico", "rp2040", "WIZnet", "WizFi360-EVB-Pico", "0x2e8a", "0x1028", 250, "WIZNET_WIZFI360_EVB_PICO", 2, 0, "boot2_w25q080_2_padded_checksum")
 MakeBoard("wiznet_5500_evb_pico", "rp2040", "WIZnet", "W5500-EVB-Pico", "0x2e8a", "0x1029", 250, "WIZNET_5500_EVB_PICO", 2, 0, "boot2_w25q080_2_padded_checksum")
 MakeBoard("wiznet_5500_evb_pico2", "rp2350", "WIZnet", "W5500-EVB-Pico2", "0x2e8a", "0x1029", 250, "WIZNET_5500_EVB_PICO2", 2, 0, "none")
 MakeBoard("wiznet_55rp20_evb_pico", "rp2040", "WIZnet", "W55RP20-EVB-Pico", "0x2e8a", "0x1029", 250, "WIZNET_55RP20_EVB_PICO", 2, 0, "boot2_w25q080_2_padded_checksum")
 MakeBoard("wiznet_6300_evb_pico", "rp2040", "WIZnet", "W6300-EVB-Pico", "0x2e8a", "0x1029", 250, "WIZNET_6300_EVB_PICO", 2, 0, "boot2_w25q080_2_padded_checksum")
 MakeBoard("wiznet_6300_evb_pico2", "rp2350", "WIZnet", "W6300-EVB-Pico2", "0x2e8a", "0x1029", 250, "WIZNET_6300_EVB_PICO2", 2, 0, "none")
+MakeBoard("wiznet_wizfi360_evb_pico", "rp2040", "WIZnet", "WizFi360-EVB-Pico", "0x2e8a", "0x1028", 250, "WIZNET_WIZFI360_EVB_PICO", 2, 0, "boot2_w25q080_2_padded_checksum")
 
 # Generic
 MakeBoard("generic", "rp2040", "Generic", "RP2040", "0x2e8a", "0xf00a", 250, "GENERIC_RP2040", 16, 0, "boot2_generic_03h_4_padded_checksum")
@@ -792,3 +800,19 @@ MakeBoard("generic_rp2350", "rp2350", "Generic", "RP2350", "0x2e8a", "0xf00f", 2
 sys.stdout.close()
 with open(os.path.abspath(os.path.dirname(__file__)) + '/../package/package_pico_index.template.json', 'w', newline='\n') as f:
     f.write(json.dumps(pkgjson, indent=3))
+
+with open(os.path.abspath(os.path.dirname(__file__)) + "/../README.md", "r") as f:
+    readme = f.readlines()
+
+skip = False
+with open(os.path.abspath(os.path.dirname(__file__)) + "/../README.md", "w") as f:
+    for i in range(len(readme)):
+        if readme[i][0] == "#":
+            skip = False
+        if not skip:
+            f.write(readme[i])
+        if readme[i] == "# Supported Boards\n":
+            skip = True
+            for n in pkgjson['packages'][0]['platforms'][0]['boards']:
+                f.write("* " + n['name'] + "\n")
+            f.write("\n")

@@ -51,10 +51,7 @@ void BLEServer::prepareAdvertising(BLEAdvertising *adv, bool advertiseServiceUUI
     BLEUUID uuid;
     for (auto s : _svc) {
         s->addATTDB();
-        Serial.println(s->_svc.toString());
-        //        if (s->_svc != BLEUUID(ORG_BLUETOOTH_SERVICE_BATTERY_SERVICE)) {
         uuid = s->_svc;
-        //        }
     }
     if (uuid && advertiseServiceUUID) {
         adv->setPartialUUID(uuid);
@@ -137,7 +134,7 @@ void BLEServer::packetHandler(uint8_t type, uint16_t channel, uint8_t *packet, u
         switch (hci_event_gap_meta_get_subevent_code(packet)) {
         case GAP_SUBEVENT_LE_CONNECTION_COMPLETE:
             con_handle = gap_subevent_le_connection_complete_get_connection_handle(packet);
-            DEBUGV("Connection complete %04x\n", con_handle);
+            DEBUGBT("Connection complete %04x", con_handle);
             for (auto s : _svc) {
                 s->setConHandle(con_handle);
             }
